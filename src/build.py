@@ -723,6 +723,23 @@ def contact():
 '''
 
 
+def not_found():
+    return f'''
+<section class="hero page-hero dark">
+  <div class="hero-topo">{topo_svg(seed=41, rings=14)}</div>
+  <div class="wrap">
+    <span class="eyebrow">Page not found</span>
+    <h1>This ground is <em>unmapped.</em></h1>
+    <p class="lede">The page you were looking for isn&rsquo;t here. It may have moved, or the link may be out of date.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/">Back to the homepage <span class="arr">&rarr;</span></a>
+      <a class="btn btn-ghost" href="/contact.html">Contact us</a>
+    </div>
+  </div>
+</section>
+'''
+
+
 PAGES = [
     ("index.html", "Home", "Ground Game Consulting Services is a Las Vegas campaign consultancy. We help candidates see how they win, then help them win.", home),
     ("approach.html", "Approach", "Our method: find the number, map the ground, build the calendar, and run the plan to Election Day.", approach),
@@ -739,7 +756,7 @@ FAVICON = LOGO.replace('<svg viewBox="0 0 40 40"', '<svg xmlns="http://www.w3.or
 
 def check_routes():
     href_re = re.compile(r'(?:href|src)="([^"#:?]+)(?:[#?][^"]*)?"')
-    pages = {p.name for p in OUT.glob("*.html")}
+    pages = {p.name for p in OUT.glob("*.html")} - {"404.html"}
     links, broken = {}, []
     for name in pages:
         text = (OUT / name).read_text()
@@ -770,6 +787,11 @@ def main():
     (OUT / "assets" / "favicon.svg").write_text(FAVICON)
     for filename, title, desc, fn in PAGES:
         (OUT / filename).write_text(page(filename, title, desc, fn()))
+    # Netlify serves 404.html for unknown paths. It sits outside the route
+    # check, and uses root-relative URLs so it works at any depth.
+    missing = page("404.html", "Page not found", "This page could not be found.", not_found())
+    missing = re.sub(r'(href|src)="(?!https?:|mailto:|tel:|#|/)', r'\1="/', missing)
+    (OUT / "404.html").write_text(missing)
     routes = check_routes()
     print(f"Built {len(PAGES)} pages -> {OUT}")
     print("Route check OK:", ", ".join(routes))

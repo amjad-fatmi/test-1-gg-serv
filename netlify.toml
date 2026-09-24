@@ -16,3 +16,11 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=3600"
+
+# The domain used to be parked at GoDaddy, which redirected visitors to /lander.
+# Browsers that cached that redirect land here; send them home.
+[[redirects]]
+  from = "/lander"
+  to = "/"
+  status = 301
+  force = true
