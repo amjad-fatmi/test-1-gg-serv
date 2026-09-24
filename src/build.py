@@ -128,11 +128,26 @@ NEVADA = ('<svg viewBox="0 0 300 400" aria-hidden="true" focusable="false">'
           '<text x="192" y="332" text-anchor="end" fill="currentColor" font-family="Inter, sans-serif" font-size="12" letter-spacing="2">LAS VEGAS</text>'
           '</svg>')
 
-LOGO = ('<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">'
-        '<rect x="1" y="1" width="38" height="38" rx="3" fill="none" stroke="#b9a27c" stroke-opacity=".6"/>'
-        '<path d="M8 28 C 14 22, 18 26, 24 18 S 32 12, 33 11" fill="none" stroke="#f3eee5" stroke-width="1.6"/>'
-        '<path d="M8 33 C 14 28, 20 31, 26 24 S 32 19, 33 18" fill="none" stroke="#b9a27c" stroke-width="1" stroke-opacity=".7"/>'
-        '<circle cx="33" cy="11" r="3" fill="#e0784f"/></svg>')
+def logo_svg():
+    """Brand mark: a 4x4 grid of blocks (districts) filled in as a rising
+    staircase (the path to the number), topped by one accent block."""
+    n, cell, gap = 4, 6, 2
+    o = (40 - (n * cell + (n - 1) * gap)) / 2
+    rects = []
+    for r in range(n):
+        for c in range(n):
+            x, y = o + c * (cell + gap), o + r * (cell + gap)
+            if c == n - 1 and r == 0:
+                fill, op = "#e0784f", 1
+            elif r >= n - 1 - c:
+                fill, op = "#f3eee5", .35 + .65 * c / (n - 1)
+            else:
+                fill, op = "#b9a27c", .13
+            rects.append(f'<rect x="{x:g}" y="{y:g}" width="{cell}" height="{cell}" rx="1" fill="{fill}" fill-opacity="{op:.2f}"/>')
+    return '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">' + "".join(rects) + '</svg>'
+
+
+LOGO = logo_svg()
 
 
 # ---------------------------------------------------------------- layout
