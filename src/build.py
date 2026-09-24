@@ -1,4 +1,4 @@
-"""Build the Ground Game Consulting Services website.
+""".
 
     .venv/bin/python groundgame/src/build.py   ->  groundgame/site/
 
